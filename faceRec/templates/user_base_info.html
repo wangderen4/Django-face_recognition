@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+    <title>用户基本信息</title>
+    <link rel="stylesheet" href="../static/layui/css/layui.css">
+    <link rel="stylesheet" href="../static/xadmin.css">
+    <link rel="stylesheet" href="https://cdn.bootcss.com/twitter-bootstrap/4.3.1/css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://cdn.bootcss.com/font-awesome/5.8.1/css/fontawesome.min.css">
+    <link rel="stylesheet" href="https://cdn.bootcss.com/ionicons/4.5.6/css/ionicons.min.css">
+    <link rel="stylesheet" href="https://cdn.bootcss.com/admin-lte/2.4.10/css/AdminLTE.min.css">
+</head>
+<body class="layui-layout-body login-bg">
+<div class="login layui-anim layui-anim-up" style="margin-top: 50px">
+    <div class="message">
+        <h3 style="display: inline-block">欢迎</h3>
+        {% if uname %}
+            <h3 style="display: inline-block; color: palevioletred">{{ uname }}</h3>
+        {% endif %}
+        <h3 style="display: inline-block">用户完善个人资料</h3>
+    </div>
+    <div id="darkbannerwrap"></div>
+    <form method="POST" action="/baseinfo/" enctype="multipart/form-data" class="layui-form">
+        {% csrf_token %}
+        上传用户头像：<input type="file" name="img" accept="image/png, image/jpeg, image/jpg" lay-verify="required"
+                      >
+        <hr class="hr15">
+        输入用户签名：<input type="text" name="sign" lay-verify="required" class="layui-input">
+        <hr class="hr15">
+        输入用户邮箱：<input type="email" name="email" lay-verify="required" class="layui-input">
+        <button type="submit" class="layui-btn btn1" id="test1">
+            <i class="layui-icon">&#xe67c;提交信息</i>
+        </button>
+    </form>
+    <hr class="hr15">
+    <a href="/main/" class="layui-btn">返回主页</a>
+</div>
+
+
+</body>
+</html>

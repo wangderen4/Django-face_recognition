@@ -1,0 +1,224 @@
+<!doctype html>
+<html class="x-admin-sm">
+<head>
+    <meta charset="UTF-8">
+    <title>人脸识别系统注册界面</title>
+    <meta name="renderer" content="webkit|ie-comp|ie-stand">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <meta name="viewport" content="width=device-width,user-scalable=yes,initial-scale=1.0,maximum-scale=3.0"/>
+    <meta http-equiv="Cache-Control" content="no-siteapp"/>
+    <link rel="stylesheet" href="../static/xadmin.css">
+    <link rel="stylesheet" href="https://cdn.bootcss.com/twitter-bootstrap/4.3.1/css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://cdn.bootcss.com/font-awesome/5.8.1/css/fontawesome.min.css">
+    <link rel="stylesheet" href="https://cdn.bootcss.com/ionicons/4.5.6/css/ionicons.min.css">
+    <link rel="stylesheet" href="https://cdn.bootcss.com/admin-lte/2.4.10/css/AdminLTE.min.css">
+    <script type="text/javascript" src="../static/jquery.min.js"></script>
+    <script src="../static/layui/layui.js" charset="utf-8"></script>
+    <!--     <script type="text/javascript" src="./js/xadmin.js"></script>
+        <script type="text/javascript" src="./js/cookie.js"></script> -->
+    <style>
+        .baba {
+            display: flex;
+        }
+        .toleft {
+            margin: 0;
+            margin: 75px 100px auto 300px;
+            width: 400px;
+            height: 550px;
+            {#transform: translateX(400px)!important;#}
+        }
+        .toright {
+            margin: 0;
+            margin: 75px auto auto 0px;
+            width: 400px;
+            height: 550px;
+            {#margin-left: 200px;#}
+            {#transform: translateX(200px);#}
+        }
+    </style>
+</head>
+<body class="login-bg baba">
+    <div class="login layui-anim layui-anim-up toleft">
+        <div class="login1 layui-anim layui-anim-up">
+            <div style="border: solid 1px red;">
+                <video width="200px" , height="200px"></video>
+            </div>
+            <div class="login-box-msg" style="border: solid 1px red;">
+                <canvas width="200px" , height="200px" id="thecanvas"></canvas>
+            </div>
+            <button type="button" id="snap" class="btn btn-primary btn-block btn-flat">拍照</button>
+        </div>
+    </div>
+    <div class="login layui-anim layui-anim-up toright">
+        <div class="message">用户注册</div>
+        <div id="darkbannerwrap"></div>
+
+        <form action="/register/" method="post" class="layui-form">
+            {% csrf_token %}
+            <input type="hidden" id="face" name="face">
+            <input name="username" placeholder="用户名" type="text" lay-verify="required" class="layui-input">
+            {% if name %}
+                <span>用户{{ name }}已存在</span>
+            {% endif %}
+            <hr class="hr15">
+            <input name="password" lay-verify="required" placeholder="密码" type="password" class="layui-input">
+            <hr class="hr15">
+            <input value="注册" lay-submit lay-filter="login" style="width:100%;" type="submit">
+        </form>
+    </div>
+
+
+
+<script>
+    $(function () {
+        layui.use('form', function () {
+            var form = layui.form;
+            // layer.msg('玩命卖萌中', function(){
+            //   //关闭后的操作
+            //   });
+            //监听提交
+            //form.on('submit(login)', function(data){
+            // alert(888)
+            // layer.msg(JSON.stringify(data.field),function(){
+            //    location.href='index.html'
+            //});
+            // return false;
+            // });
+        });
+    })
+
+
+</script>
+
+
+<!-- 底部结束 -->
+<script>
+    //百度统计可去掉
+    var _hmt = _hmt || [];
+    (function () {
+        var hm = document.createElement("script");
+        hm.src = "https://hm.baidu.com/hm.js?b393d153aeb26b46e9431fabaf0f6190";
+        var s = document.getElementsByTagName("script")[0];
+        s.parentNode.insertBefore(hm, s);
+    })();
+</script>
+<script type="text/javascript">//base64数据变成bolb对象
+function base64ToBlob(urlData, type) {
+    let arr = urlData.split(',');
+    let mime = arr[0].match(/:(.*?);/)[1] || type;
+    // 去掉url的头，并转化为byte
+    let bytes = window.atob(arr[1]);
+    // 处理异常,将ascii码小于0的转换为大于0
+    let ab = new ArrayBuffer(bytes.length);
+    // 生成视图（直接针对内存）：8位无符号整数，长度1个字节
+    let ia = new Uint8Array(ab);
+    for (let i = 0; i < bytes.length; i++) {
+        ia[i] = bytes.charCodeAt(i);
+    }
+    return new Blob([ab], {
+        type: mime
+    });
+}
+</script>
+<script type="text/javascript" src="../static/base64js.min.js"></script>
+<script type="text/javascript" src="../static/canvas2image.js"></script>
+<script type="text/javascript">
+    function fileOrBlobToDataURL(obj, cb) {
+        let a = new FileReader();
+        a.readAsDataURL(obj);
+        a.onload = function (e) {
+            cb(e.target.result);
+        };
+    }
+
+    function blobToImage(blob, cb) {
+        fileOrBlobToDataURL(blob, function (dataurl) {
+            var img = new Image();
+            img.src = dataurl;
+            cb(img);
+        });
+    }
+
+    function $(elem) {
+        return document.querySelector(elem);
+    }
+
+    var canvas = $('canvas'),
+        context = canvas.getContext('2d'),
+        video = $('video'),
+        snap = $('#snap'),
+        face = $('#face'),
+        mediaStreamTrack;
+    // 获取媒体方法（新方法）
+    // 使用新方法打开摄像头
+    if (navigator.mediaDevices && navigator.mediaDevices.getUserMedia) {
+        navigator.mediaDevices.getUserMedia({
+            video: {height: 300, width: 300},
+            audio: false
+        }).then(function (stream) {
+            console.log(stream);
+            mediaStreamTrack = typeof stream.stop === 'function' ? stream : stream.getTracks()[1];
+            try {
+                video.src = (window.URL || window.webkitURL).createObjectURL(stream);
+                video.play();
+            } catch (e) {
+                video.srcObject = stream;
+                video.play()
+            }
+
+        }).catch(function (err) {
+            console.log(err);
+        })
+    }
+    // 使用旧方法打开摄像头
+    else if (navigator.getMedia) {
+        navigator.getMedia({
+            video: true
+        }, function (stream) {
+            mediaStreamTrack = stream.getTracks()[0];
+
+            video.src = (window.URL || window.webkitURL).createObjectURL(stream);
+            video.play();
+        }, function (err) {
+            console.log(err);
+        });
+    }
+    // 截取图像
+    snap.addEventListener('click', function () {
+        context.drawImage(video, 0, 0, 200, 200);
+        face.value = canvas.toDataURL('image/jpg');
+    }, false);
+
+    {#function base64Img2Blob(code) {#}
+    {#    var parts = code.split(';base64,');#}
+    {#    var contentType = parts[0].split(':')[1];#}
+    {#    var raw = window.atob(parts[1]);#}
+    {#    var rawLength = raw.length;#}
+    {##}
+    {#    var uInt8Array = new Uint8Array(rawLength);#}
+    {##}
+    {#    for (var i = 0; i < rawLength; ++i) {#}
+    {#        uInt8Array[i] = raw.charCodeAt(i);#}
+    {#    }#}
+    {##}
+    {#    return new Blob([uInt8Array], {type: contentType});#}
+    {# }#}
+        {##}
+        {#function downloadFile(fileName, content) {#}
+        {##}
+        {#    var aLink = document.createElement('a');#}
+        {#    var blob = base64Img2Blob(content); //new Blob([content]);#}
+        {##}
+        {#    var evt = document.createEvent("HTMLEvents");#}
+        {#    evt.initEvent("click", false, false);//initEvent 不加后两个参数在FF下会报错#}
+        {#    aLink.download = fileName;#}
+        {#    aLink.href = URL.createObjectURL(blob);#}
+        {##}
+        {#    aLink.dispatchEvent(evt);#}
+        {# }#}
+    {##}
+    {#downloadFile('ship.png', canvas.toDataURL("image/png"));#}
+</script>
+
+</body>
+</html>

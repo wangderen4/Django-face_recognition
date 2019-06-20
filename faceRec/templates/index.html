@@ -1,0 +1,236 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+    <title>人脸识别</title>
+    <link rel="stylesheet" href="../static/layui/css/layui.css">
+    <style>
+        .btn1 {
+            margin-left: 25%;
+        }
+    </style>
+</head>
+
+<body class="layui-layout-body">
+    <div class="layui-layout layui-layout-admin">
+        <div class="layui-header">
+            <div class="layui-logo">
+                <h2>人脸识别系统</h2>
+            </div>
+            <!-- 头部区域（可配合layui已有的水平导航） -->
+
+            <ul class="layui-nav layui-layout-right">
+                <li class="layui-nav-item">
+                    <a href="javascript:;">
+                        <img src="/static/media/{{ user.u_icon }}" class="layui-nav-img">
+                        {{ user }}
+                    </a>
+                    <dl class="layui-nav-child">
+                        <dd><a href="/baseinfo/">基本资料</a></dd>
+                    </dl>
+                </li>
+                <li class="layui-nav-item"><a href="/logout/">退出</a></li>
+            </ul>
+        </div>
+
+        <div class="layui-side layui-bg-black">
+            <div class="layui-side-scroll">
+                <!-- 左侧导航区域（可配合layui已有的垂直导航） -->
+                <ul class="layui-nav layui-nav-tree" lay-filter="test">
+                    <li class="layui-nav-item layui-nav-itemed">
+                        <a class="" href="javascript:;">功能区域</a>
+                        <dl class="layui-nav-child" id="func">
+                            {# http://127.0.0.1:8000/sex_reg/ " target="kk" id="sex_reg #}
+                            {# http://127.0.0.1:8000/phiz_reg/" target="kk" id="phil_reg#}
+                            {# http://127.0.0.1:8000/face_detect/" target="kk" id="face_local#}
+                            {# http://127.0.0.1:8000/face_draw/" target="kk" id="deci_draw#}
+                            <dd><a href="javascript:;" class="layui-this">性别识别</a></dd>
+                            <dd><a href="javascript:;">表情识别</a></dd>
+                            <dd><a href="javascript:;">人脸定位</a></dd>
+                            <dd><a href="javascript:;">数字化妆</a></dd>
+                        </dl>
+                    </li>
+                </ul>
+            </div>
+        </div>
+
+        <div class="layui-body">
+            <!-- 内容主体区域 -->
+            <div class="list" style="padding: 15px; display: block">
+                <div class="layui-row">
+                    <div class="layui-col-md4">
+                        <form method="POST" action="/sex_reg/" enctype="multipart/form-data">
+                            {% csrf_token %}
+                            <input type="file" id="file1" class="filepath" name="img" onchange="changepic1(this)"
+                                accept="image/png, image/jpeg, image/jpg">
+                            <img src="" id="show1" width="200">
+                            <button type="submit" class="layui-btn btn1">
+                                <i class="layui-icon">&#xe67c;上传图片1</i>
+                            </button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+            <div class="list" style="padding: 15px; display: none">
+                <div class="layui-row">
+                        <div class="layui-col-md4">
+                            <form method="POST" action="/phiz_reg/" enctype="multipart/form-data">
+                                {% csrf_token %}
+                                <input type="file" id="file2" class="filepath" name="img" onchange="changepic2(this)"
+                                    accept="image/png, image/jpeg, image/jpg">
+                                <img src="" id="show2" width="200">
+                                <button type="submit" class="layui-btn btn1">
+                                    <i class="layui-icon">&#xe67c;上传图片2</i>
+                                </button>
+                            </form>
+                        </div>
+                </div>
+            </div>
+            <div class="list" style="padding: 15px; display: none">
+                <div class="layui-row">
+                    <div class="layui-col-md4">
+                        <form method="POST" action="/face_detect/" enctype="multipart/form-data">
+                            {% csrf_token %}
+                            <input type="file" id="file3" name="img" onchange="changepic3(this)"
+                                accept="image/png, image/jpeg, image/jpg">
+                            <img src="" id="show3" width="200">
+                            <button type="submit" class="layui-btn btn1">
+                                <i class="layui-icon">&#xe67c;上传图片3</i>
+                            </button>
+                        </form>
+                </div>
+            </div>
+        </div>
+            <div class="list" style="padding: 15px; display: none">
+                <div class="layui-row">
+                    <div class="layui-col-md4">
+                        <form method="POST" action="/face_draw/" enctype="multipart/form-data">
+                            {% csrf_token %}
+                            <input type="file" id="file4" name="img" onchange="changepic4(this)"
+                                accept="image/png, image/jpeg, image/jpg">
+                            <img src="" id="show4" width="200">
+                            <button type="submit" class="layui-btn btn1">
+                                <i class="layui-icon">&#xe67c;上传图片4</i>
+                            </button>
+                        </form>
+                    </div>
+                </div>
+
+            </div>
+            {% if img %}
+            <div>
+                处理后的图片：<img src="{{ img }}">
+            </div>
+            {% endif %}
+        </div>
+    <div class="layui-footer">
+        <!-- 底部固定区域 -->
+        © layui.com - 底部固定区域
+    </div>
+    </div>
+    <script type="text/javascript">
+        let img = {{ img }}//imgurl 就是你的图片路径
+
+        function getBase64Image(img) {
+            var canvas = document.createElement("canvas");
+            canvas.width = img.width;
+            canvas.height = img.height;
+            var ctx = canvas.getContext("2d");
+            ctx.drawImage(img, 0, 0, img.width, img.height);
+            var ext = img.src.substring(img.src.lastIndexOf(".") + 1).toLowerCase();
+            var dataURL = canvas.toDataURL("image/" + ext);
+            return dataURL;
+        }
+
+        var image = new Image();
+        image.src = img;
+        image.onload = function () {
+            var base64 = getBase64Image(image);
+            console.log(base64);
+        }
+    </script>
+    <script>
+        function changepic1() {
+            var reads = new FileReader();
+            f = document.getElementById('file1').files[0];
+            reads.readAsDataURL(f);
+            reads.onload = function (e) {
+                document.getElementById('show1').src = this.result;
+
+            };
+        }
+        function changepic2() {
+            var reads = new FileReader();
+            f = document.getElementById('file2').files[0];
+            reads.readAsDataURL(f);
+            reads.onload = function (e) {
+                document.getElementById('show2').src = this.result;
+
+            };
+        }
+        function changepic3() {
+            var reads = new FileReader();
+            f = document.getElementById('file3').files[0];
+            reads.readAsDataURL(f);
+            reads.onload = function (e) {
+                document.getElementById('show3').src = this.result;
+            };
+        }
+        function changepic4() {
+            var reads = new FileReader();
+            f = document.getElementById('file4').files[0];
+            reads.readAsDataURL(f);
+            reads.onload = function (e) {
+                document.getElementById('show4').src = this.result;
+            };
+        }
+
+
+    </script>
+    <script src="https://cdn.bootcss.com/jquery/3.4.1/jquery.min.js"></script>
+    <script type="text/javascript">
+        function fileOrBlobToDataURL(obj, cb) {
+            let a = new FileReader();
+            a.readAsDataURL(obj);
+            a.onload = function (e) {
+                cb(e.target.result);
+            };
+        }
+
+    </script>
+    <script type="text/javascript">
+        $(function () {
+            //获取点击事件的对象
+            $("#func dd").click(function () {
+                //获取要显示或隐藏的对象
+                var divShow = $(".layui-body").children('.list');
+                //判断当前对象是否被选中，如果没选中的话进入if循环
+                if ($(this).hasClass('layui-this')) {
+                    //获取当前对象的索引
+                    var index = $(this).index();
+                    console.log('当前元素索引》》》', index)
+                    //当前对象添加选中样式并且其同胞移除选中样式；
+                    $(this).addClass('layui-this').siblings('dd').removeClass('layui-this');
+                    //索引对应的div块显示
+                    $(divShow[index]).show();
+                    console.log(divShow[index])
+                    //索引对应的div块的同胞隐藏
+                    $(divShow[index]).siblings('.list').hide();
+                }
+            });
+        });
+    </script>
+    <script src="../static/layui/layui.js"></script>
+    <script>
+        //JavaScript代码区域
+        layui.use('element', function () {
+            var element = layui.element;
+
+        });
+    </script>
+
+</body>
+
+</html>
