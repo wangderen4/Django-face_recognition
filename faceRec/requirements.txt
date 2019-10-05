@@ -5,7 +5,7 @@ baidu-aip==2.2.13.0
 certifi==2019.3.9
 chardet==3.0.4
 Click==7.0
-Django==2.1.7
+django>=2.1.11
 dlib==19.8.1
 face-recognition==1.2.3
 face-recognition-models==0.3.0
@@ -15,7 +15,7 @@ h5py==2.9.0
 idna==2.8
 image==1.5.27
 itsdangerous==1.1.0
-Jinja2==2.10
+Jinja2>=2.10.1
 Keras==2.2.4
 Keras-Applications==1.0.7
 Keras-Preprocessing==1.0.9
@@ -37,6 +37,6 @@ tensorboard==1.13.1
 tensorflow==1.13.1
 tensorflow-estimator==1.13.0
 termcolor==1.1.0
-urllib3==1.24.1
+urllib3>=1.24.2
 virtualenv==16.4.1
-Werkzeug==0.14.1
+Werkzeug>=0.15.3
