@@ -28,7 +28,7 @@ Pillow==5.4.1
 protobuf==3.7.1
 PyMySQL==0.9.3
 pytz==2018.9
-PyYAML==5.1
+PyYAML==5.4
 requests==2.21.0
 scipy==1.2.1
 six==1.12.0
