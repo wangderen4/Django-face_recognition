@@ -25,7 +25,7 @@ mock==3.0.3
 numpy==1.16.2
 opencv-python==4.1.0.25
 Pillow==5.4.1
-protobuf==3.7.1
+protobuf==3.18.3
 PyMySQL==0.9.3
 pytz==2018.9
 PyYAML==5.1
