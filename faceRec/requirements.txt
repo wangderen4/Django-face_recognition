@@ -2,7 +2,7 @@ absl-py==0.7.1
 aniso8601==6.0.0
 astor==0.7.1
 baidu-aip==2.2.13.0
-certifi==2019.3.9
+certifi==2022.12.7
 chardet==3.0.4
 Click==7.0
 django>=2.1.11
